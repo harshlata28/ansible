@@ -1,0 +1,22 @@
+---
+- name : ec2 launcher
+  hosts : local
+  connection : local
+  tags : provisioning
+  tasks :
+  - name : launching ec2
+    ec2 :
+       instance_type : t2.micro
+       key_name : Terra-vpc
+       image : ami-0c1a7f89451184c8b
+       region : ap-south-1
+       wait : yes
+       group : default
+       count : 1
+       vpc_subnet_id : subnet-06d22a280ea6571ef
+       assign_public_ip : yes
+       aws_access_key: AKIAYGTU2AWTTLLETTSH
+       aws_secret_key: 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
+...
+#
+#ansible-playbook -vvv task.yml --connection=local
