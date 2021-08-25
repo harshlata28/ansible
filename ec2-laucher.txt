@@ -15,8 +15,8 @@
        count : 1
        vpc_subnet_id : subnet-06d22a280ea6571ef
        assign_public_ip : yes
-       aws_access_key: AKIAYGTU2AWTTLLETTSH
-       aws_secret_key: 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
+       aws_access_key: ****************
+       aws_secret_key: **********************
 ...
 #
 #ansible-playbook -vvv task.yml --connection=local
