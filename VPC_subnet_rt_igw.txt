@@ -1,0 +1,53 @@
+---
+- hosts: local
+  connection: local
+  gather_facts: yes
+  vars:
+       aws_access_key: *******************
+       aws_secret_key: *************************
+  tasks:
+    - ec2_vpc_net:
+       name: MY-VPC
+       aws_access_key: "{{ aws_access_key }}"
+       aws_secret_key: "{{ aws_secret_key }}"
+       state: present
+       cidr_block: 10.10.0.0/16
+       region: ap-south-1
+       tags:
+          Name: MY-VPC
+      register: ec2_vpc_net_result
+    - ec2_vpc_subnet:
+       aws_access_key: "{{ aws_access_key }}"
+       aws_secret_key: "{{ aws_secret_key }}"
+       vpc_id: "{{ ec2_vpc_net_result.vpc.id }}"
+       region: ap-south-1
+       az: ap-south-1a    # az is the availability zone
+       state: present
+       cidr: 10.10.1.0/24
+       # enable public ip
+       map_public: yes
+       tags:
+        Name: subnet-1
+      register: public_subnet
+    - ec2_vpc_igw:
+       vpc_id: "{{ ec2_vpc_net_result.vpc.id }}"
+       region: ap-south-1
+       aws_access_key: "{{ aws_access_key }}"
+       aws_secret_key: "{{ aws_secret_key }}"
+       state: present
+       tags:
+           Name: igw
+      register: vpc_igw
+    - ec2_vpc_route_table:
+       vpc_id: "{{ ec2_vpc_net_result.vpc.id }}"
+       region: ap-south-1
+       aws_access_key: "{{ aws_access_key }}"
+       aws_secret_key: "{{ aws_secret_key }}"
+       tags:
+         Name: Public
+       subnets:
+         - 10.10.1.0/24
+       routes:
+         - dest: 0.0.0.0/0
+           gateway_id: "{{ vpc_igw.gateway_id }}"
+...
